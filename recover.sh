@@ -89,11 +89,11 @@ EOF
     if [ $PG_MAJOR -lt 12 ] ; then
         cat <<EOF >$PGDATA/recovery.conf
         standby_mode=$HOTSTANDBY
-        restore_command='echo ''{"client": "$HOSTNAME", "path": "$SRCXLOGDIR/%f", "uid": "$PGUID"}'' | socat -,ignoreeof $RecoverySocket; mv $RecoveryArea/%f $PGDATA/%p'
+        restore_command='echo ''{"client": "$HOSTNAME", "path": "$SRCXLOGDIR/%f", "uid": "$PGUID", "time": "$Time"}'' | socat -,ignoreeof $RecoverySocket; mv $RecoveryArea/%f $PGDATA/%p'
 EOF
     else
         cat <<-EOF >>$PGDATA/postgresql.conf
-        restore_command='echo ''{"client": "$HOSTNAME", "path": "$SRCXLOGDIR/%f", "uid": "$PGUID"}'' | socat -,ignoreeof $RecoverySocket; mv $RecoveryArea/%f $PGDATA/%p'
+        restore_command='echo ''{"client": "$HOSTNAME", "path": "$SRCXLOGDIR/%f", "uid": "$PGUID", "Time": "$Time"}'' | socat -,ignoreeof $RecoverySocket; mv $RecoveryArea/%f $PGDATA/%p'
 EOF
         [ $HOTSTANDBY == "on" ] &&  touch $PGDATA/standby.signal || touch $PGDATA/recovery.signal
     fi
